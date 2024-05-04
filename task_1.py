@@ -35,3 +35,21 @@ print("Accuracy:", accuracy)
 
 
 joblib.dump(model, "crop_recommendation_model.joblib")
+
+def predict_crop():
+    N = float(input("Enter the value for 'N' (Nitrogen): "))
+    P = float(input("Enter the value for 'P' (Phosphorus): "))
+    K = float(input("Enter the value for 'K' (Potassium): "))
+    temperature = float(input("Enter the value for 'temperature': "))
+    humidity = float(input("Enter the value for 'humidity': "))
+    ph = float(input("Enter the value for 'ph': "))
+    rainfall = float(input("Enter the value for 'rainfall': "))
+
+    input_data = pd.DataFrame([[N, P, K, temperature, humidity, ph, rainfall]], columns=numerical_features)
+    input_data_scaled = scaler.transform(input_data)
+    predicted_crop = model.predict(input_data_scaled)[0]
+    return predicted_crop
+
+# Predict crop based on user input
+predicted_crop = predict_crop()
+print("Predicted crop:", predicted_crop)
