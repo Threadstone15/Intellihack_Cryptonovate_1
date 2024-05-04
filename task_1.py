@@ -25,7 +25,7 @@ X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 
-model = SVC(kernel='linear', C=1.0)
+model = SVC(kernel='linear', C=1.0, probability=True)
 model.fit(X_train_scaled, y_train)
 
 
@@ -36,7 +36,7 @@ print("Accuracy:", accuracy)
 
 joblib.dump(model, "crop_recommendation_model.joblib")
 
-def predict_crop():
+def predict_most_suitable_crops():
     N = float(input("Enter the value for 'N' (Nitrogen): "))
     P = float(input("Enter the value for 'P' (Phosphorus): "))
     K = float(input("Enter the value for 'K' (Potassium): "))
@@ -47,9 +47,43 @@ def predict_crop():
 
     input_data = pd.DataFrame([[N, P, K, temperature, humidity, ph, rainfall]], columns=numerical_features)
     input_data_scaled = scaler.transform(input_data)
-    predicted_crop = model.predict(input_data_scaled)[0]
-    return predicted_crop
+    probabilities = model.predict_proba(input_data_scaled)[0]  # Get probabilities for each class
+    probabilities_dict = {get_name(i): prob for i, prob in enumerate(probabilities)}
+    sorted_probabilities = sorted(probabilities_dict.items(), key=lambda x: x[1], reverse=True)  # Sort probabilities
 
-# Predict crop based on user input
-predicted_crop = predict_crop()
-print("Predicted crop:", predicted_crop)
+    # Select the top three crops
+    top_three_crops = [crop for crop, prob in sorted_probabilities[:3]]
+    return top_three_crops
+
+
+def get_name(key):
+    my_dict = {
+        0: "wheat",
+        1: "barley",
+        2: "lettuce",
+        3: "spinach",
+        4: "cauliflower",
+        5: "brussels_sprouts",
+        6: "cabbage",
+        7: "beans",
+        8: "peas",
+        9: "turnips",
+        10: "carrots",
+        11: "beets",
+        12: "cherries",
+        13: "plums",
+        14: "raspberries",
+        15: "pears",
+        16: "blackcurrants",
+        17: "strawberries",
+        18: "apples",
+        19: "potatoes",
+        20: "rapeseed",
+        21: "tomatoes"
+    }
+    
+    return my_dict[key]
+
+
+predicted_crops = predict_most_suitable_crops()
+print("Top three predicted crops:", predicted_crops)
