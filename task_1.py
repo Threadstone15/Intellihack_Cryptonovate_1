@@ -9,8 +9,8 @@ import joblib
 data = pd.read_csv("Crop_Dataset.csv")
 
 
-numerical_features = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
-data = data[numerical_features + ["Label_Encoded"]]
+parameters = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
+data = data[parameters + ["Label_Encoded"]]
 
 
 X = data.drop(columns=["Label_Encoded"])  
@@ -29,23 +29,23 @@ model = SVC(kernel='linear', C=1.0, probability=True)
 model.fit(X_train_scaled, y_train)
 
 
-y_pred = model.predict(X_test_scaled)
-accuracy = accuracy_score(y_test, y_pred)
+y_prediction = model.predict(X_test_scaled)
+accuracy = accuracy_score(y_test, y_prediction)
 print("Accuracy:", accuracy)
 
 
 joblib.dump(model, "crop_recommendation_model.joblib")
 
 def predict_most_suitable_crops():
-    N = float(input("Enter the value for 'N' (Nitrogen): "))
-    P = float(input("Enter the value for 'P' (Phosphorus): "))
-    K = float(input("Enter the value for 'K' (Potassium): "))
-    temperature = float(input("Enter the value for 'temperature': "))
-    humidity = float(input("Enter the value for 'humidity': "))
-    ph = float(input("Enter the value for 'ph': "))
-    rainfall = float(input("Enter the value for 'rainfall': "))
+    N = float(input("What is the Nitrogen level (N) : "))
+    P = float(input("What is the Phosphorus level (P): "))
+    K = float(input("What is the Pottasium level (K): "))
+    temperature = float(input("What is the temperature in (°C): "))
+    humidity = float(input("What is the humidity as a percentage: "))
+    ph = float(input("What is the pH value: "))
+    rainfall = float(input("What is the rainfall level in (cm): "))
 
-    input_data = pd.DataFrame([[N, P, K, temperature, humidity, ph, rainfall]], columns=numerical_features)
+    input_data = pd.DataFrame([[N, P, K, temperature, humidity, ph, rainfall]], columns=parameters)
     input_data_scaled = scaler.transform(input_data)
     probabilities = model.predict_proba(input_data_scaled)[0]  # Get probabilities for each class
     probabilities_dict = {get_name(i): prob for i, prob in enumerate(probabilities)}
