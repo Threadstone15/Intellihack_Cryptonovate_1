@@ -23,3 +23,15 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, stratif
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
+
+
+model = SVC(kernel='linear', C=1.0)
+model.fit(X_train_scaled, y_train)
+
+
+y_pred = model.predict(X_test_scaled)
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+
+
+joblib.dump(model, "crop_recommendation_model.joblib")
